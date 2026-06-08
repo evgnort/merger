@@ -9,7 +9,7 @@ FSeqBlock *known_blocks[1 << SEQ_NUM_COUNT];
 FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
    {
    FSeqBlock *block = (FSeqBlock *)calloc(1,sizeof(FSeqBlock));
-   int pset,pset2,seqnum,seqnum2,i;
+   int pset,pset2,seqnum,seqnum2,i,j;
 
    block->seqmask = seqmask;
    block->seqcount = __builtin_popcount(seqmask);
@@ -24,12 +24,17 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
       FSeqAggregate *agg = seqs[seqnum];
       FSeqBlock *prevblock = known_blocks[seqmask - (1 << seqnum)];
 
+      int agg_psets[PORT_SETS_COUNT] = {0};
+      int agg_psetscnt = 0;
+      for (pset = 0; pset < PORT_SETS_COUNT; pset++)
+         if (agg->portsets[pset].prob)
+            agg_psets[agg_psetscnt++] = pset;
+
       double T = agg->EZ;
       double R[PORT_SETS_COUNT] = {0};
-      for (pset = 0; pset < PORT_SETS_COUNT; pset++)
+      for (i = 0; i < agg_psetscnt; i++)
          {
-         if (!agg->portsets[pset].prob)
-            continue;
+         pset = agg_psets[i];
          int pmask = get_portset_by_num(pset);
 
          double seqWeights[SEQ_NUM_COUNT] = {0};
@@ -43,7 +48,7 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
             for (seqnum2 = 0; seqnum2 < SEQ_NUM_COUNT; seqnum2++)
                if (prevblock->seqmask & (1 << seqnum2))
                   {
-                  seqWeights[seqnum2] = prevblock->portsets[pset].seqL[seqnum2];
+                  seqWeights[seqnum2] = prevblock->portsets[pset].seqStream[seqnum2];
                   swsum += seqWeights[seqnum2];
                   ro += seqWeights[seqnum2] * agg->portsets[pset].ES;
                   }
@@ -67,11 +72,11 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
          double ql = 0;
          if (prevblock)
             {
-            for (i = 0; i < PORTS_COUNT; i++)
+            for (j = 0; j < PORTS_COUNT; j++)
                {
-               if (!((1 << i) & pmask))
+               if (!((1 << j) & pmask))
                   continue;
-               ql += prevblock->qlength[i];
+               ql += prevblock->qlength[j];
                }
             ql /= __builtin_popcount(pmask);
             }
@@ -81,24 +86,43 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
          }
       if (T * agg->size > block->TD)
          block->TD = T * agg->size;
-//      double portL[PORTS_COUNT] = {0};
+
+      double portStreams[PORTS_COUNT] = {0};
+      double qlen[PORTS_COUNT] = {0};
+
+      for (i = 0; i < agg_psetscnt; i++)
+         {
+         pset = agg_psets[i];
+         int pmask = get_portset_by_num(pset);
+         int pcnt = __builtin_popcount(pmask);
+
+//         block->portsets[pset].seqStream[seqnum] = agg->portsets[pset].prob / T;
+
+         for (j = 0; j < PORTS_COUNT; j++)
+            {
+            if (!((1 << j) & pmask))
+               continue;
+            portStreams[j] += agg->portsets[pset].prob / pcnt;
+            qlen[j] += agg->portsets[pset].prob / pcnt * R[pset] / T;
+            }
+         }
+
+      for (j = 0; j < PORTS_COUNT; j++)
+         {
+         block->qlength[j] += qlen[j];
+         }
 
       for (pset = 0; pset < PORT_SETS_COUNT; pset++)
          {
          int pmask = get_portset_by_num(pset);
          int pcnt = __builtin_popcount(pmask);
+         block->portsets[pset].seqStream[seqnum] = 0;
 
-         if (!agg->portsets[pset].prob)
-            continue;
-
-         block->portsets[pset].seqL[seqnum] = agg->portsets[pset].prob / T;
-
-         for (i = 0; i < PORTS_COUNT; i++)
+         for (j = 0; j < PORTS_COUNT; j++)
             {
-            if (!((1 << i) & pmask))
+            if (!((1 << j) & pmask))
                continue;
-//            portL[i] += agg->portsets[pset].prob / pcnt;
-            block->qlength[i] += agg->portsets[pset].prob / pcnt * R[pset] / T;
+            block->portsets[pset].seqStream[seqnum] += portStreams[j];
             }
          }
       }
@@ -138,9 +162,10 @@ int compare_seq_blocks(const void *a,const void *b)
    return 0;
    }
 
+
 int main(int argc,char *argv[])
    {
-   int i,j, scnt;
+   int i,j;
 
    int layer_buf1[1024], layer_buf2[1024];
    int *cur_layer = layer_buf1, *prev_layer = layer_buf2;
@@ -149,23 +174,36 @@ int main(int argc,char *argv[])
    parser_init();
    init_port_sets();
 
-   if (argc <= 1)
-      return puts("No input files"),0;
-   scnt = argc - 1;
+
+   char *predefnames[]= {"sampleA.s","sampleB.s","sampleC.s","sampleD.s","sampleE.s","sampleF.s"};
+   char **fnames = predefnames;
+   int scnt = 6;
+
    if (argc - 1 > SEQ_NUM_COUNT)
       return printf("Too many input files, maximum count is %d\n",SEQ_NUM_COUNT),0;
+   if (argc > 1)
+      {
+      scnt = argc - 1;
+      fnames = &argv[1];
+      }
 
    FSeqAggregate *seqs[SEQ_NUM_COUNT];
    FSeqBlock *initial_blocks[SEQ_NUM_COUNT];
 
+//   char *basedir = "../../../samples/";
+   char *basedir = "samples/";
    int blockscount = 0;
+   char fnamebuf[512];
    for (i = 0; i < scnt; i++)
       {
-
-      FInstructionSet *is = parser_read_file(argv[i+1]);
+      sprintf(fnamebuf,"%s%s",basedir,fnames[i]);
+      FInstructionSet *is = parser_read_file(fnamebuf);
+      if (!is)
+         goto main_exit;
+         
       seqs[i] = make_seq_aggregate(is);
       free(is);
-      strncpy(seqs[i]->seqname,argv[i+1],16);
+      strncpy(seqs[i]->seqname,fnames[i],16);
       seqs[i]->seqname[15] = 0;
       }
    qsort(seqs,scnt,sizeof(FSeqAggregate *),compare_seqs);
@@ -175,6 +213,7 @@ int main(int argc,char *argv[])
       uint32_t seqmask = 1 << i;
       FSeqBlock *work = make_block(1 << i,seqs);
       known_blocks[seqmask] = work;
+      blockscount++;
       prev_layer[prev_layer_size++] = seqmask;
       }
 
@@ -205,51 +244,52 @@ int main(int argc,char *argv[])
       }
    while (prev_layer_size);
 
-   double best = 100000;
    qsort(known_blocks,SEQ_NUM_COUNT * SEQ_NUM_COUNT,sizeof(FSeqBlock *),compare_seq_blocks);
 
    uint32_t full_mask = (1 << scnt) - 1;
-   uint32_t csmask = known_blocks[0]->seqmask;
-   uint32_t clen = known_blocks[0]->TD;
+   uint32_t csmask = 0;
+   double clen = 0;
    
    int beststack[SEQ_NUM_COUNT] = {0};
    int stack[SEQ_NUM_COUNT] = {0};
    int beststsize = 0;
-   int stack_pos = 1;
+   int stack_pos = 0;
+   double best = 100000;
+
    while (1)
       {
-      int np = stack[stack_pos];
-      if (np >= blockscount)
-         {
-step_backward:
+      int cp = stack[stack_pos];
+      while (cp >= blockscount || clen + known_blocks[cp]->TD > best)
+         { // Проверен последний блок в верхнем элементе стека или текущий результат уже хуже имеющегося
          if (stack_pos == 0)
-            break;
+            goto main_search_finish;
          stack_pos--;
-         clen -= known_blocks[stack[stack_pos]]->TD;
-         csmask -= known_blocks[stack[stack_pos]]->seqmask;
          stack[stack_pos]++;
-         continue;
+         cp = stack[stack_pos];
          }
-      double nlen = clen + known_blocks[np]->TD;
-      if (!(known_blocks[np]->seqmask & csmask) && nlen < best)
-         {
-         uint32_t nmask = known_blocks[np]->seqmask | csmask;
-         if (nmask == full_mask)
-            { // Полное покрытие
-            best = clen + known_blocks[np]->TD;
+      clen += known_blocks[cp]->TD;
+      csmask |= known_blocks[cp]->seqmask;
+
+      if (csmask == full_mask)
+         { // Полное покрытие
+         if (clen < best)
+            { // Лучший вариант
+            best = clen;
             memcpy(beststack,stack,sizeof(stack));
             beststsize = stack_pos + 1;
-            goto step_backward;
             }
-         // Добавляем новый блок к стеку
-         stack[++stack_pos] = np;
-         csmask = nmask;
-         clen = nlen;
+         clen -= known_blocks[cp]->TD;
+         csmask -= known_blocks[cp]->seqmask;
+         stack[stack_pos] = ++cp;
          }
-      stack[stack_pos]++;
+      else
+         {
+         stack_pos++;
+         stack[stack_pos] = cp + 1;
+         }
       }
-main_finish:
 
+main_search_finish:
    if (beststsize)
       {
       printf("Best: %f\n",best);
@@ -272,5 +312,6 @@ main_finish:
          }
       printf("\n");
       }
+main_exit:
    return 0;
    }

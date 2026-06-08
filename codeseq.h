@@ -55,9 +55,7 @@ typedef struct FDeviceSetDataTg {
 
 // Характеристики набора приборов в блоке последовательностей
 typedef struct FPortSetTg {
-   double seqL[SEQ_NUM_COUNT];
-   double Cin2;
-   double reis;
+   double seqStream[SEQ_NUM_COUNT];
    } FPortSet;
 
 #define PORT_SETS_COUNT 16
@@ -73,6 +71,7 @@ typedef struct FSeqAggregateTg {
 
 void init_port_sets(void);
 int get_portset_by_num(int psnum);
+const char *get_psname_by_num(int psnum);
 
 FSeqAggregate *make_seq_aggregate(FInstructionSet *is);
 

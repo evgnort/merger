@@ -213,13 +213,13 @@ FInstructionDesc instruction_set[] = {
 
 /* ==================== VPBLENDVB ==================== */
 /* 128-битные версии (XMM) */
-   {{"vpblendvb", {OP_XMM, OP_XMM, OP_XMM, OP_XMM}}, 2, {{PORT_015,1,2,0}},0},
-   {{"vpblendvb", {OP_XMM, OP_MEM, OP_XMM, OP_XMM}}, 3, {{PORT_23,6,1,0},{PORT_015,1,2,0}},0},
-   {{"vpblendvb", {OP_XMM, OP_MEC, OP_XMM, OP_XMM}}, 3, {{PORT_23,6,1,0},{PORT_015,1,2,0}},0},
+   {{"vpblendvb", {OP_XMM, OP_XMM, OP_XMM, OP_XMM}}, 1, {{PORT_015,1,2,0}},0},
+   {{"vpblendvb", {OP_XMM, OP_MEM, OP_XMM, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,2,0}},0},
+   {{"vpblendvb", {OP_XMM, OP_MEC, OP_XMM, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,2,0}},0},
     /* 256-битные версии (YMM) */
-   {{"vpblendvb", {OP_YMM, OP_YMM, OP_YMM, OP_YMM}}, 2, {{PORT_015,1,2,0}},0},
-   {{"vpblendvb", {OP_YMM, OP_MEM, OP_YMM, OP_YMM}}, 3, {{PORT_23,7,1,0},{PORT_015,1,2,0}},0},
-   {{"vpblendvb", {OP_YMM, OP_MEC, OP_YMM, OP_YMM}}, 3, {{PORT_23,7,1,0},{PORT_015,1,2,0}},0},
+   {{"vpblendvb", {OP_YMM, OP_YMM, OP_YMM, OP_YMM}}, 1, {{PORT_015,1,2,0}},0},
+   {{"vpblendvb", {OP_YMM, OP_MEM, OP_YMM, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,2,0}},0},
+   {{"vpblendvb", {OP_YMM, OP_MEC, OP_YMM, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,2,0}},0},
 
 /* ==================== VPGATHERDD ==================== */
 /* 128-битная версия (XMM - сборка 4 элементов) */
@@ -539,12 +539,15 @@ FInstructionDesc instruction_set[] = {
    {{"notl", {OP_MEC, OP_NON, OP_NON, OP_NON}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
 
 /* ==================== PREFETCHT2 ==================== */
-   {{"prefetcht2", {OP_MEM, OP_NON, OP_NON, OP_NON}}, 1, {{PORT_23,0,1,0}},0},
-   {{"prefetcht2", {OP_MEC, OP_NON, OP_NON, OP_NON}}, 1, {{PORT_23,0,1,0}},0},
+   {{"prefetcht2", {OP_NON, OP_NON, OP_NON, OP_MEM}}, 1, {{PORT_23,0,1,0}},1},
+   {{"prefetcht2", {OP_NON, OP_NON, OP_NON, OP_MEC}}, 1, {{PORT_23,0,1,0}},1},
 	
 /* ==================== VPERMQ ==================== */
+   {{"vpermq", {OP_VAL, OP_YMM, OP_NON, OP_YMM}}, 1, {{PORT_5,3,1,0}},0},
    {{"vpermq", {OP_YMM, OP_VAL, OP_NON, OP_YMM}}, 1, {{PORT_5,3,1,0}},0},
+   {{"vpermq", {OP_VAL, OP_MEM, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_5,3,1,0}},0},
    {{"vpermq", {OP_MEM, OP_VAL, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_5,3,1,0}},0},
+   {{"vpermq", {OP_VAL, OP_MEC, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_5,3,1,0}},0},
    {{"vpermq", {OP_MEC, OP_VAL, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_5,3,1,0}},0},
 
 /* ==================== VPINSRD ==================== */

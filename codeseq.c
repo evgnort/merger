@@ -156,6 +156,7 @@ void free_timeline(FTimeline *tl)
 
 int portset2num[256] = { 0 };
 int num2portset[PORT_SETS_COUNT] = { 0 };
+const char *portset_names[PORT_SETS_COUNT] = { "p0","p1","p2","p3","p4","p5","p6","p7","p01","p015","p0156","p06","p15","p23","p237",""};
 
 void init_port_sets(void)
    {
@@ -169,12 +170,12 @@ void init_port_sets(void)
    num2portset[7] = PORT_7;
 
    num2portset[8] = PORT_01;
-   num2portset[9] = PORT_23;
-   num2portset[10] = PORT_237;
-   num2portset[11] = PORT_015;
+   num2portset[9] = PORT_015;
+   num2portset[10] = PORT_0156;
+   num2portset[11] = PORT_06;
    num2portset[12] = PORT_15;
-   num2portset[13] = PORT_06;
-   num2portset[14] = PORT_0156;
+   num2portset[13] = PORT_23;
+   num2portset[14] = PORT_237;
    num2portset[15] = 0;
 
    portset2num[PORT_0] = 0;
@@ -187,12 +188,12 @@ void init_port_sets(void)
    portset2num[PORT_7] = 7;
 
    portset2num[PORT_01] = 8;
-   portset2num[PORT_23] = 9;
-   portset2num[PORT_237] = 10;
-   portset2num[PORT_015] = 11;
+   portset2num[PORT_015] = 9;
+   portset2num[PORT_0156] = 10;
+   portset2num[PORT_06] = 11;
    portset2num[PORT_15] = 12;
-   portset2num[PORT_06] = 13;
-   portset2num[PORT_0156] = 14;
+   portset2num[PORT_23] = 13;
+   portset2num[PORT_237] = 14;
    }
 
 int get_portset_by_num(int psnum)
@@ -200,38 +201,80 @@ int get_portset_by_num(int psnum)
    return num2portset[psnum];
    }
 
+const char *get_psname_by_num(int psnum)
+   {
+   return portset_names[psnum];
+   }
+
+typedef struct FMOpsDescTg {
+   int tick;
+   uint32_t portmask;
+   uint32_t duration;
+   } FMOpsDesc;
+
+int compare_mops(const void *a,const void *b)
+   {
+   FMOpsDesc *s1 = (FMOpsDesc *)a;
+   FMOpsDesc *s2 = (FMOpsDesc *)b; 
+   if (s1->tick > s2->tick)
+      return 1;
+   if (s1->tick < s2->tick)
+      return -1;
+   return 0;
+   }
+
 FSeqAggregate *make_seq_aggregate(FInstructionSet *is)
    {
+   FMOpsDesc mopsdesc[2048];
+   int cnt = 0;
+
    int i,j,k;
    double lat_sum = 0;
    double lat_sum2 = 0;
-   int cnt = 0;
 
    FSeqAggregate *rv = (FSeqAggregate *)calloc(1,sizeof(FSeqAggregate));
 
    double TSum = 0;
    double pES2[PORT_SETS_COUNT] = {0};
+
+   int itick = 0;
    for (k = 0; k < is->inst_cnt; k++)
+      {
+      itick = is->instructions[k].tick;
       for (i = 0; i < is->instructions[k].mops_cnt; i++)
          {
-         if (is->instructions[k].ops[i].flags & MOP_UNCHAINED)
-            continue;
-         double ml = (double)is->instructions[k].ops[i].latency;
-         lat_sum += ml;
-         lat_sum2 += ml * ml;
+         mopsdesc[cnt].tick = itick;
+         mopsdesc[cnt].portmask = is->instructions[k].ops[i].portmask;
+         mopsdesc[cnt].duration = is->instructions[k].ops[i].duration;
+         if (!is->instructions[k].ops[i].portmask)
+            is->instructions[k].ops[i].portmask = 0;
+         if (!is->instructions[k].ops[i].flags & MOP_UNCHAINED)
+            itick += is->instructions[k].ops[i].latency;
          cnt++;
-         int psnum = portset2num[is->instructions[k].ops[i].portmask];
-         TSum += is->instructions[k].ops[i].duration;
-         rv->portsets[psnum].ES += is->instructions[k].ops[i].duration;
-         pES2[psnum] += (double)is->instructions[k].ops[i].duration * is->instructions[k].ops[i].duration;
-         rv->portsets[psnum].use_count++;
          }
+      }
+
+   qsort(mopsdesc,cnt,sizeof(FMOpsDesc),compare_mops);
+
+   for (i = 0; i < cnt; i++)
+      {
+      int psnum = portset2num[mopsdesc[i].portmask];
+      double dur = mopsdesc[i].duration;
+      TSum += dur;
+      rv->portsets[psnum].ES += dur;
+      pES2[psnum] += dur * dur;
+      rv->portsets[psnum].use_count++;
+      double ml = (double)((i == cnt - 1) ? itick : mopsdesc[i+1].tick) - mopsdesc[i-1].tick;
+      lat_sum += ml;
+      lat_sum2 += ml * ml;
+      }
+
    for (i = 0; i < PORT_SETS_COUNT ; i++)
       {
       if (!rv->portsets[i].use_count)
          continue;
       rv->portsets[i].ES /= rv->portsets[i].use_count;
-      rv->portsets[i].prob = (double)rv->portsets[i].use_count / cnt;
+      rv->portsets[i].prob = (double)rv->portsets[i].use_count / cnt * 4;
       double ES2 =  rv->portsets[i].ES * rv->portsets[i].ES;
       rv->portsets[i].CS2 = (pES2[i] / rv->portsets[i].use_count - ES2) / ES2;
       }
@@ -239,6 +282,6 @@ FSeqAggregate *make_seq_aggregate(FInstructionSet *is)
    double EZ2 =  rv->EZ * rv->EZ;
    rv->CZ2 = (lat_sum2 / cnt - EZ2) / EZ2;
    rv->T = rv->EZ + TSum / cnt;
-   rv->size = cnt;
+   rv->size = itick;
    return rv;
    }
