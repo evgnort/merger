@@ -71,60 +71,108 @@ FInstructionDesc instruction_set[] = {
    {{"movswq", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_23,6,1,0}},0},
    {{"movsbq", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_23,6,1,0}},0},
    {{"movsbw", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_23,7,1,0}},0},
+   
    {{"leal", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_15,1,1,0}},0},
-   {{"leaq", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_15,1,1,0}},0},
-
    {{"leal", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_1,3,1,0}},0},
+
+   {{"leaq", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_15,1,1,0}},0},
    {{"leaq", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_1,3,1,0}},0},
-   {{"addb", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},0},
-   {{"addb", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},0},
-   {{"addb", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},0},
-   {{"addb", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
-   {{"addb", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
 
-   {{"addw", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},0},
-   {{"addw", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},0},
-   {{"addw", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},0},
-   {{"addw", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
-   {{"addw", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
+   {{"addb", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"addb", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"addb", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"addb", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"addb", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"addb", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
 
-   {{"addl", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},0},
-   {{"addl", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},0},
-   {{"addl", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},0},
-   {{"addl", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
-   {{"addl", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
+   {{"addw", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"addw", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"addw", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"addw", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"addw", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
 
-   {{"addq", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},0},
-   {{"addq", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},0},
-   {{"addq", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},0},
-   {{"addq", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},0},
-   {{"addq", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
-   {{"addq", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
+   {{"addl", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"addl", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"addl", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"addl", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"addl", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"addl", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
 
+   {{"addq", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"addq", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"addq", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"addq", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"addq", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"addq", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
 
-   {{"subb", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},0},
-   {{"subb", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},0},
-   {{"subb", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},0},
-   {{"subb", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
-   {{"subb", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
+   {{"subb", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"subb", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"subb", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"subb", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"subb", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
 
-   {{"subw", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},0},
-   {{"subw", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},0},
-   {{"subw", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},0},
-   {{"subw", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
-   {{"subw", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
+   {{"subw", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"subw", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"subw", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"subw", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"subw", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
 
-   {{"subl", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},0},
-   {{"subl", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},0},
-   {{"subl", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},0},
-   {{"subl", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
-   {{"subl", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
+   {{"subl", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"subl", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"subl", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"subl", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"subl", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"subl", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
 
-   {{"subq", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},0},
-   {{"subq", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},0},
-   {{"subq", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},0},
-   {{"subq", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
-   {{"subq", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
+   {{"subq", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"subq", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"subq", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"subq", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"subq", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"subq", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+
+   {{"andl", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"andl", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"andl", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"andl", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"andl", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"andl", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+
+   {{"andq", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"andq", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"andq", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"andq", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"andq", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"andq", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+
+   {{"xorl", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"xorl", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"xorl", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"xorl", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"xorl", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"xorl", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+
+   {{"xorq", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"xorq", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"xorq", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"xorq", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"xorq", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"xorq", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+
+   {{"orl", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"orl", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"orl", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"orl", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"orl", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"orl", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+
+   {{"orq", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"orq", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"orq", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"orq", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,5,1,0},{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"orq", {OP_REG, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"orq", {OP_REG, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,5,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+
    {{"vmovq", {OP_XMM, OP_NON, OP_NON, OP_XMM}}, 1, {{PORT_015,1,1,0}},0},
 
    {{"vmovd", {OP_REG, OP_NON, OP_NON, OP_XMM}}, 1, {{PORT_5,3,1,0}},0},
@@ -371,6 +419,14 @@ FInstructionDesc instruction_set[] = {
    {{"vpmovzxbd", {OP_MEM, OP_NON, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,3,1,0}},0},
    {{"vpmovzxbd", {OP_MEC, OP_NON, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,3,1,0}},0},
 
+/* ==================== VPMOVMSKB ==================== */
+/* 128-битные версии (XMM) */
+   {{"vpmovmskb", {OP_XMM, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0,3,1,0}},0},
+/* 256-битные версии (YMM) */
+   {{"vpmovmskb", {OP_YMM, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0,3,1,0}},0},
+
+
+
 /* ==================== PDEP ==================== */
    {{"pdep", {OP_REG, OP_REG, OP_NON, OP_REG}}, 1, {{PORT_1,3,1,0}},0},
    {{"pdep", {OP_REG, OP_MEM, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},0},
@@ -390,42 +446,57 @@ FInstructionDesc instruction_set[] = {
    {{"cltq", {OP_NON, OP_NON, OP_NON, OP_NON}}, 1, {{PORT_0156,1,1,0}},0},
 
 /* ==================== CMPL ==================== */
-   {{"cmpl", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},0},
+   {{"cmpl", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_NO_TARGET},
+   {{"cmpl", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_NO_TARGET},
+
+/* ==================== TESTL ==================== */
+   {{"testl", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_NO_TARGET},
+   {{"testl", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_NO_TARGET},
 
 /* ==================== SARL ==================== */
-   {{"sarl", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_06,1,1,0}},1},
-   {{"sarl", {OP_VAL, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},1},
-   {{"sarl", {OP_VAL, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},1},
+   {{"sarl", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_06,1,1,0}},IF_TARGET_DEP},
+   {{"sarl", {OP_VAL, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"sarl", {OP_VAL, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+
+/* ==================== SALL ==================== */
+   {{"sall", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_06,1,1,0}},IF_TARGET_DEP},
+   {{"sall", {OP_VAL, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"sall", {OP_VAL, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
 
 /* ==================== SALQ ==================== */
-   {{"salq", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_06,1,1,0}},1},
-   {{"salq", {OP_VAL, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},1},
-   {{"salq", {OP_VAL, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},1},
+   {{"salq", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_06,1,1,0}},IF_TARGET_DEP},
+   {{"salq", {OP_VAL, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"salq", {OP_VAL, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
 
 /* ==================== SARQ ==================== */
-   {{"sarq", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_06,1,1,0}},1},
-   {{"sarq", {OP_VAL, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},1},
-   {{"sarq", {OP_VAL, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},1},
+   {{"sarq", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_06,1,1,0}},IF_TARGET_DEP},
+   {{"sarq", {OP_VAL, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"sarq", {OP_VAL, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+
+/* ==================== SHRL ==================== */
+   {{"shrl", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_06,1,1,0}},IF_TARGET_DEP},
+   {{"shrl", {OP_VAL, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"shrl", {OP_VAL, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
 
 /* ==================== SHRQ ==================== */
-   {{"shrq", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_06,1,1,0}},1},
-   {{"shrq", {OP_VAL, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},1},
-   {{"shrq", {OP_VAL, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},1},
+   {{"shrq", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_06,1,1,0}},IF_TARGET_DEP},
+   {{"shrq", {OP_VAL, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"shrq", {OP_VAL, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,4,1,0},{PORT_06,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
 
 /* ==================== INCL ==================== */
-   {{"incl", {OP_NON, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},1},
-   {{"incl", {OP_NON, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},1},
-   {{"incl", {OP_NON, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},1},
+   {{"incl", {OP_NON, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"incl", {OP_NON, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"incl", {OP_NON, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
 
 /* ==================== INCQ ==================== */
-   {{"incq", {OP_NON, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},1},
-   {{"incq", {OP_NON, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},1},
-   {{"incq", {OP_NON, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},1},
+   {{"incq", {OP_NON, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"incq", {OP_NON, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"incq", {OP_NON, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
 
 /* ==================== CMOVA ==================== */
-   {{"cmova", {OP_REG, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_0156,2,2,0}},1},
-   {{"cmova", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 3, {{PORT_23,4,1,0},{PORT_0156,2,2,0}},1},
-   {{"cmova", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 3, {{PORT_23,4,1,0},{PORT_0156,2,2,0}},1},
+   {{"cmova", {OP_REG, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_0156,2,2,0}},IF_TARGET_DEP},
+   {{"cmova", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 3, {{PORT_23,4,1,0},{PORT_0156,2,2,0}},IF_TARGET_DEP},
+   {{"cmova", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 3, {{PORT_23,4,1,0},{PORT_0156,2,2,0}},IF_TARGET_DEP},
 
 /* ==================== VPBROADCASTQ ==================== */
 /* 128-битные версии (XMM) */
@@ -449,19 +520,19 @@ FInstructionDesc instruction_set[] = {
 	
 /* ==================== VFMADD231ps ==================== */
 /* 256-битные версии (YMM) */
-   {{"vfmadd231ps", {OP_YMM, OP_YMM, OP_NON, OP_YMM}}, 1, {{PORT_01,4,1,0}},1},
+   {{"vfmadd231ps", {OP_YMM, OP_YMM, OP_NON, OP_YMM}}, 1, {{PORT_01,4,1,0}},IF_TARGET_DEP},
 
 /* ==================== VUNPCKLPS ==================== */
 /* 128-битные версии (XMM) */
-   {{"vunpcklps", {OP_XMM, OP_XMM, OP_NON, OP_XMM}}, 1, {{PORT_5,1,1,0}},1},
+   {{"vunpcklps", {OP_XMM, OP_XMM, OP_NON, OP_XMM}}, 1, {{PORT_5,1,1,0}},IF_TARGET_DEP},
 /* 256-битные версии (YMM) */
-   {{"vunpcklps", {OP_YMM, OP_YMM, OP_NON, OP_YMM}}, 1, {{PORT_5,1,1,0}},1},
+   {{"vunpcklps", {OP_YMM, OP_YMM, OP_NON, OP_YMM}}, 1, {{PORT_5,1,1,0}},IF_TARGET_DEP},
 
 /* ==================== VUNPCKHPS ==================== */
 /* 128-битные версии (XMM) */
-   {{"vunpckhps", {OP_XMM, OP_XMM, OP_NON, OP_XMM}}, 1, {{PORT_5,1,1,0}},1},
+   {{"vunpckhps", {OP_XMM, OP_XMM, OP_NON, OP_XMM}}, 1, {{PORT_5,1,1,0}},IF_TARGET_DEP},
 /* 256-битные версии (YMM) */
-   {{"vunpckhps", {OP_YMM, OP_YMM, OP_NON, OP_YMM}}, 1, {{PORT_5,1,1,0}},1},
+   {{"vunpckhps", {OP_YMM, OP_YMM, OP_NON, OP_YMM}}, 1, {{PORT_5,1,1,0}},IF_TARGET_DEP},
 
 /* ==================== VPSRLQ ==================== */
 /* 128-битные версии (XMM) */
@@ -528,19 +599,24 @@ FInstructionDesc instruction_set[] = {
    {{"vpcmpeqb", {OP_XMM, OP_XMM, OP_NON, OP_XMM}}, 1, {{PORT_015,1,1,0}},0},
    {{"vpcmpeqb", {OP_XMM, OP_MEM, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,1,0}},0},
    {{"vpcmpeqb", {OP_XMM, OP_MEC, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,1,0}},0},
+   {{"vpcmpeqb", {OP_MEM, OP_XMM, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,1,0}},0},
+   {{"vpcmpeqb", {OP_MEC, OP_XMM, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,1,0}},0},
+
 /* 256-битные версии (YMM) */
    {{"vpcmpeqb", {OP_YMM, OP_YMM, OP_NON, OP_YMM}}, 1, {{PORT_015,1,1,0}},0},
    {{"vpcmpeqb", {OP_YMM, OP_MEM, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,1,0}},0},
    {{"vpcmpeqb", {OP_YMM, OP_MEC, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,1,0}},0},
+   {{"vpcmpeqb", {OP_MEM, OP_YMM, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,1,0}},0},
+   {{"vpcmpeqb", {OP_MEC, OP_YMM, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,1,0}},0},
 
 /* ==================== NOTL ==================== */
-   {{"notl", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},0},
-   {{"notl", {OP_MEM, OP_NON, OP_NON, OP_NON}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
-   {{"notl", {OP_MEC, OP_NON, OP_NON, OP_NON}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
+   {{"notl", {OP_NON, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"notl", {OP_NON, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"notl", {OP_NON, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
 
 /* ==================== PREFETCHT2 ==================== */
-   {{"prefetcht2", {OP_NON, OP_NON, OP_NON, OP_MEM}}, 1, {{PORT_23,0,1,0}},1},
-   {{"prefetcht2", {OP_NON, OP_NON, OP_NON, OP_MEC}}, 1, {{PORT_23,0,1,0}},1},
+   {{"prefetcht2", {OP_NON, OP_NON, OP_NON, OP_MEM}}, 1, {{PORT_23,0,1,0}},IF_TARGET_DEP},
+   {{"prefetcht2", {OP_NON, OP_NON, OP_NON, OP_MEC}}, 1, {{PORT_23,0,1,0}},IF_TARGET_DEP},
 	
 /* ==================== VPERMQ ==================== */
    {{"vpermq", {OP_VAL, OP_YMM, OP_NON, OP_YMM}}, 1, {{PORT_5,3,1,0}},0},
@@ -556,9 +632,9 @@ FInstructionDesc instruction_set[] = {
    {{"vpinsrd", {OP_XMM, OP_MEC, OP_VAL, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_5,3,1,0}},0},
 
 /* ==================== NEGL ==================== */
-   {{"negl", {OP_NON, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},1},
-   {{"negl", {OP_NON, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},1},
-   {{"negl", {OP_NON, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},1},
+   {{"negl", {OP_NON, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
+   {{"negl", {OP_NON, OP_NON, OP_NON, OP_MEM}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
+   {{"negl", {OP_NON, OP_NON, OP_NON, OP_MEC}}, 4, {{PORT_23,4,1,0},{PORT_0156,1,1,0},{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},IF_TARGET_DEP},
 
 /* ==================== BLSR ==================== */
    {{"blsr", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},0},
@@ -566,20 +642,28 @@ FInstructionDesc instruction_set[] = {
    {{"blsr", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_0156,1,1,0}},0},
 
 /* ==================== SETLE ==================== */
-   {{"setle", {OP_NON, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},1},
+   {{"setle", {OP_NON, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
 
 /* ==================== SETNE ==================== */
-   {{"setne", {OP_NON, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},1},
+   {{"setne", {OP_NON, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},IF_TARGET_DEP},
 
 /* ==================== IMULL ==================== */
-   {{"imull", {OP_REG, OP_REG, OP_NON, OP_REG}}, 1, {{PORT_1,3,1,0}},0},
-   {{"imull", {OP_REG, OP_MEM, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},0},
-   {{"imull", {OP_REG, OP_MEC, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},0},
+   {{"imull", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_1,3,1,0}},0},
+   {{"imull", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},0},
+   {{"imull", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},0},
 
 /* ==================== TZCNT ==================== */
-   {{"tzcnt", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_1,3,1,0}},0},
-   {{"tzcnt", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},0},
-   {{"tzcnt", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},0},
+   {{"tzcntw", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_1,3,1,0}},IF_TARGET_DEP},
+   {{"tzcntw", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},IF_TARGET_DEP},
+   {{"tzcntw", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},IF_TARGET_DEP},
+
+   {{"tzcntl", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_1,3,1,0}},0},
+   {{"tzcntl", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},0},
+   {{"tzcntl", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},0},
+
+   {{"tzcntq", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_1,3,1,0}},0},
+   {{"tzcntq", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},0},
+   {{"tzcntq", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},0},
 
 /* ==================== VPSHUFB ==================== */
 /* 128-битные версии (XMM) */
@@ -641,6 +725,11 @@ FInstructionDesc instruction_set[] = {
    {{"vpextrq", {OP_VAL,OP_XMM, OP_NON, OP_MEM}}, 2, {{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
    {{"vpextrq", {OP_VAL,OP_XMM, OP_NON, OP_MEC}}, 2, {{PORT_23,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
 
+/* ==================== VPINSRD ==================== */
+   {{"vpinsrd", {OP_VAL,OP_REG, OP_XMM, OP_XMM}}, 2, {{PORT_1,2,1,0},{PORT_5,1,1,0}},0},
+   {{"vpinsrd", {OP_VAL,OP_MEM, OP_XMM, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_5,1,1,0}},0},
+   {{"vpinsrd", {OP_VAL,OP_MEC, OP_XMM, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_5,1,1,0}},0},
+
 /* ==================== VPEXTRACTI128 ==================== */
    {{"vextracti128", {OP_VAL,OP_YMM, OP_NON, OP_XMM}}, 1, {{PORT_5,1,1,0}},0},
    {{"vextracti128", {OP_VAL,OP_YMM, OP_NON, OP_MEM}}, 2, {{PORT_237,1,1,MOP_UNCHAINED},{PORT_4,2,1,0}},0},
@@ -691,15 +780,20 @@ void parser_init(void)
    qsort(inst_idx,known_icount,sizeof(FInstructionDef *),compare_inst_def);
    }
 
-static int _inst_search(FInstruction *inst)
+static int _inst_search(FInstruction *inst, FInstructionDef *def, int ops_cnt)
    {
-   int i;
    int low = -1;
    int hi = known_icount;
    int pos = known_icount / 2;
    int res;
 
-   while (res = _compare_inst_def(&inst_idx[pos]->def,&inst->def))
+   if (ops_cnt && ops_cnt != 4)
+      {
+      def->operands[3] = def->operands[ops_cnt - 1];
+      def->operands[ops_cnt - 1] = OP_NON;
+      }
+
+   while (res = _compare_inst_def(&inst_idx[pos]->def,def))
       {
       if (res < 0)
          low = pos;
@@ -709,9 +803,16 @@ static int _inst_search(FInstruction *inst)
       if (pos <= low || pos >= hi)
          return 0;
       }
+   strcpy(inst->def.mnem,def->mnem);
+   if (ops_cnt && ops_cnt != 4 && (inst_idx[pos]->flags & IF_NO_TARGET))
+      {
+      def->operands[ops_cnt - 1] = def->operands[3];
+      def->operands[3] = OP_NON;
+      }
+   *((uint32_t *)&inst->def.operands) = *((uint32_t *)&def->operands);
    inst->mops_cnt = inst_idx[pos]->mops_cnt;
    inst->ops = inst_idx[pos]->ops;
-   inst->targ_dep = inst_idx[pos]->targ_dep;
+   inst->targ_dep = inst_idx[pos]->flags & IF_TARGET_DEP;
    inst->latency = inst_idx[pos]->latency;
    return 1;
    }
@@ -739,29 +840,33 @@ static char *_next_param(char *pos)
    return eol ? NULL : pos;
    }
 
-uint8_t get_reg(char *string, int *reg, int *prevdep)
+static uint8_t _get_reg(char *string, int *reg)
    {
-   *prevdep = 0;
    *reg = REG_NONE;
-   switch (string[0])
+   if (!string[0] || !string[1])
+      return OP_BAD;
+   char ch0 = string[0] | 0x20;
+   char ch1 = string[1] | 0x20;
+   char ch2 = string[2] | 0x20;
+   switch (ch0)
       {
       case 'd':
-         if (string[1] == 'i') return *prevdep = 1,*reg = REG_RDI, OP_REG;
+         if (ch1 == 'i') return *reg = REG_RDI, OP_REG;
          goto low_regs;
       case 's':
-         if (string[1] == 'i') return *prevdep = 1,*reg = REG_RSI, OP_REG;
-         if (string[1] == 'p') return *reg = REG_NONE, OP_REG;
+         if (ch1 == 'i') return *reg = REG_RSI, OP_REG;
+         if (ch1 == 'p') return *reg = REG_NONE, OP_REG;
          return OP_BAD;
       case 'b': 
-         if (string[1] == 'p') return *reg = REG_NONE, OP_REG;
+         if (ch1 == 'p') return *reg = REG_NONE, OP_REG; // Не считаем RBP, RSP т.к. они одинаковы для всех
       case 'a':
       case 'c':
          {
 low_regs:
-         switch (string[1])
+         switch (ch1)
             {
             case 'x': case 'h': case 'l':
-               return *prevdep = 1,*reg = REG_RAX + string[0] - 'a', OP_REG;
+               return *reg = REG_RAX + ch0 - 'a', OP_REG;
             }
          return OP_BAD;
          }
@@ -770,7 +875,7 @@ low_regs:
 
       case 'x':
          {
-         if (string[1] != 'm' && string[2] != 'm')
+         if (ch1 != 'm' && ch2 != 'm')
             return OP_BAD;
          int rnum = strtoul(&string[3],NULL,0);
          if (rnum > 15)
@@ -779,7 +884,7 @@ low_regs:
          }
       case 'y':
          {
-         if (string[1] != 'm' && string[2] != 'm')
+         if (ch1 != 'm' && ch2 != 'm')
             return OP_BAD;
          int rnum = strtoul(&string[3],NULL,0);
          if (rnum > 15)
@@ -792,42 +897,42 @@ low_regs:
          if (!rnum)
             {
 hi_regs:
-            switch(string[1])
+            switch(ch1)
                {
                case 'c':
                case 'a':
                   {
-                  if (string[2] == 'x')
-                     return *reg = REG_RAX + string[1] - 'a', OP_REG;
+                  if (ch2 == 'x')
+                     return *reg = REG_RAX + ch1 - 'a', OP_REG;
                   return OP_BAD;
                   }
                case 'b':
                   {
-                  if (string[2] == 'x')
+                  if (ch2 == 'x')
                      return *reg = REG_RBX, OP_REG;
-                  if (string[2] == 'p')
+                  if (ch2 == 'p')
                      return *reg = REG_NONE, OP_REG;
                   return OP_BAD;
                   }
                case 'd':
                   {
-                  if (string[2] == 'x')
+                  if (ch2 == 'x')
                      return *reg = REG_RDX, OP_REG;
-                  if (string[2] == 'i')
+                  if (ch2 == 'i')
                      return *reg = REG_RDI, OP_REG;
                   return OP_BAD;
                   }
                case 's':
                   {
-                  if (string[2] == 'i')
+                  if (ch2 == 'i')
                      return *reg = REG_RSI, OP_REG;
-                  if (string[2] == 'p')
+                  if (ch2 == 'p')
                      return *reg = REG_NONE, OP_REG;
                   return OP_BAD;
                   }
                case 'i':
                   {
-                  if (string[2] == 'p')
+                  if (ch2 == 'p')
                      return *reg = REG_NONE, OP_REG;
                   return OP_BAD;
                   }
@@ -842,33 +947,27 @@ hi_regs:
    return OP_BAD;
    }
 
-// prevdep - запись в регистр зависит от его предыдущего содержания, он попадает в 
-uint8_t get_param_type(char *param,uint64_t *reg_usage, int *prev_dep)
+static uint8_t _get_param_type(char *param,uint64_t *reg_usage)
    {
-   *prev_dep = 0;
    int has_shift = 0;
-   switch (*param)
+   switch (param[0])
       {
       case '$': // Константа
          return OP_VAL;
       case '%':
          { // Регистр
          int reg = REG_NONE;
-         uint8_t rv = get_reg(&param[1],&reg,prev_dep);
-         if (reg != REG_NONE)
-            *reg_usage |= 1LL << reg;
+         uint8_t rv = _get_reg(&param[1],&reg);
+         *reg_usage |= ((uint64_t)(reg != REG_NONE)) << reg;
          return rv;
          }
       case '.':
          {
-         while (param[0] != '(' && param[0] != ',' && param[0] != '\t' && param[0] != '\r' && param[0] != '\n' && param[0] != '#')
-            param++;
-         if (param[0] == '(')
-            {
-            has_shift = 1;
-            goto bracket;
-            }
-         return OP_MEM;
+         param = strpbrk(param,"(,# \t\r\n");
+         if (!param || param[0] != '(')
+            return OP_MEM;
+         has_shift = 1;
+         goto bracket;
          }
       case '-':
       case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
@@ -881,24 +980,20 @@ uint8_t get_param_type(char *param,uint64_t *reg_usage, int *prev_dep)
       case '(':
 bracket:
          {
-         int pd,reg;
-         int ccnt = 0;
-         char *pos = &param[0];
+         int reg,ccnt = 0;
          do
             {
-            pos++;
-            if (*pos == '%')
+            param++;
+            param += strspn(param,"\t ");
+            if (param[0] == '%')
                {
-               uint8_t rv = get_reg(pos+1,&reg,&pd);
-               if (reg != REG_NONE)
-                  *reg_usage |= 1LL << reg;
+               uint8_t rv = _get_reg(param+1,&reg);
+               *reg_usage |= ((uint64_t)(reg != REG_NONE)) << reg;
                }
             ccnt++;
-            while (*pos != ')' && *pos != ',')
-               pos++;
+            param = strpbrk(param,"),");
             }
-         while (*pos != ')');
-
+         while (param && param[0] != ')');
          return (ccnt + has_shift > 2) ?  OP_MEC : OP_MEM;
          }
       }
@@ -912,7 +1007,11 @@ FInstructionSet *parser_read_file(const char *filename)
    int i;
 
 	f = fopen(filename,"r");
-	if (!f) return NULL;
+	if (!f)
+      {
+      printf("can not open file %s\n",filename);
+      return NULL;
+      }
 
    FInstructionSet *rv = (FInstructionSet *)malloc(sizeof(FInstructionSet) + sizeof(FInstruction) * INSTS_CNT_STEP);
    int set_cap = INSTS_CNT_STEP;
@@ -927,11 +1026,11 @@ FInstructionSet *parser_read_file(const char *filename)
    int tick = 0;
    int tick_use_count = 0;
 
-   uint64_t output_regs = 0;
+   uint64_t output_regs = 0; // Регистры, которым присвоено значение, но оно не использовано внутри блока = выходные
 
 	for (;fgets(buf,512,f); lnum++)
 		{
-      uint8_t pts[4] = {0};
+      FInstructionDef idef = {0};
       uint64_t reg_usages[4] = {0};
       int pts_cnt = 0;
       int regs[REG_MAX] = {0};
@@ -949,47 +1048,47 @@ FInstructionSet *parser_read_file(const char *filename)
          continue;
       while (pos[0] == ' ' || pos[0] == '\t') pos++;
 
-      int prev_dep = 0;
+      strcpy(idef.mnem,cmd);
+
       do
          {
-         pts[pts_cnt] = get_param_type(pos,&reg_usages[pts_cnt],&prev_dep);
-         if (pts[pts_cnt] == OP_BAD)
+         idef.operands[pts_cnt] = _get_param_type(pos,&reg_usages[pts_cnt]);
+         if (idef.operands[pts_cnt] == OP_BAD)
             {
-            printf("%s %d: instruction %s has unknown param format\n",filename,lnum,work->def.mnem);
+            printf("%s %d: instruction %s has unknown param format\n",filename,lnum,cmd);
+            goto prf_err_exit;
             }
-         if (pts[pts_cnt] == OP_NON)
+         if (idef.operands[pts_cnt] == OP_NON)
             break;
          pts_cnt++;
          pos = _next_param(pos);
          }
       while (pts_cnt < 4 && pos);
 
+
+      if (!_inst_search(work,&idef,pts_cnt))
+         {
+         printf("%s %d: unknown instruction %s\n",filename,lnum,cmd);
+         goto prf_err_exit;
+         }
+
       uint64_t reg_usage = 0; // Регистры от которых зависит инструкция
-      uint64_t targ_regs; // Регистры в аргументе назначения
-      strcpy(work->def.mnem,cmd);
-      if (pts_cnt)
+      uint64_t targ_regs = 0; // Регистры в аргументе назначения
+      for (i = 0; i < pts_cnt - 1; i++)
          {
-         work->def.operands[3] = pts[pts_cnt - 1];
-         targ_regs = reg_usages[pts_cnt - 1];
-
-         for (i = 0; i < pts_cnt - 1; i++)
-            {
-            work->def.operands[i] = pts[i];
-            reg_usage |= reg_usages[i];
-            }
+         work->def.operands[i] = idef.operands[i];
+         reg_usage |= reg_usages[i];
          }
-
-      if (!_inst_search(work))
-         {
-         printf("%s %d: unknown instruction %s\n",filename,lnum,work->def.mnem);
-         return 0;
-         }
+      if (work->def.operands[3])
+         targ_regs = reg_usages[i];
+      else if (work->def.operands[i])
+         reg_usage |= reg_usages[i];
 
       if (work->def.operands[3] == OP_REG || work->def.operands[3] == OP_XMM || work->def.operands[3] == OP_YMM)
          {
          work->treg = __builtin_ctz(targ_regs);
          output_regs &= ~reg_usage;
-         if (prev_dep || work->targ_dep)
+         if (work->targ_dep)
             reg_usage |= targ_regs;
          output_regs |= targ_regs;
          }
@@ -1057,4 +1156,9 @@ process_command:
    fclose(f);
    rv->inst_cnt = work - rv->instructions;
    return rv;
+
+prf_err_exit:
+   if (f) fclose(f);
+   if (rv) free(rv);
+   return NULL;
    }

@@ -82,11 +82,14 @@ typedef struct FInstructionDefTg {
    uint8_t operands[4];
 } FInstructionDef;
 
+#define IF_TARGET_DEP 0x01
+#define IF_NO_TARGET 0x02
+
 typedef struct FInstructionDescTg {
    FInstructionDef def;
    int mops_cnt;
    FMicroOp ops[8];
-   int targ_dep;
+   int flags;
    int latency;
 } FInstructionDesc;
 
