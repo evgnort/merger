@@ -27,7 +27,7 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
       int agg_psets[PORT_SETS_COUNT] = {0};
       int agg_psetscnt = 0;
       for (pset = 0; pset < PORT_SETS_COUNT; pset++)
-         if (agg->portsets[pset].prob)
+         if (agg->portsets[pset].usage)
             agg_psets[agg_psetscnt++] = pset;
 
       double T = agg->EZ;
@@ -39,7 +39,7 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
 
          double seqWeights[SEQ_NUM_COUNT] = {0};
 
-         seqWeights[seqnum] = agg->portsets[pset].prob / agg->T;
+         seqWeights[seqnum] = agg->portsets[pset].usage / agg->T;
 
          double swsum = seqWeights[seqnum];
          double ro = seqWeights[seqnum] * agg->portsets[pset].ES;
@@ -50,7 +50,7 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
                   {
                   seqWeights[seqnum2] = prevblock->portsets[pset].seqStream[seqnum2];
                   swsum += seqWeights[seqnum2];
-                  ro += seqWeights[seqnum2] * agg->portsets[pset].ES;
+                  ro += seqWeights[seqnum2] * seqs[seqnum2]->portsets[pset].ES;
                   }
             }
          for (seqnum2 = 0; seqnum2 < SEQ_NUM_COUNT; seqnum2++)
@@ -62,12 +62,14 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
             {
             if (!(seqmask & (1 << seqnum2)))
                continue;
-            Cin2 += (1 - ro) * seqWeights[seqnum2] * (seqs[seqnum2]->portsets[pset].prob * seqs[seqnum2]->CZ2 + 1 - seqs[seqnum2]->portsets[pset].prob);
+            double lcin = (1 - ro) * seqWeights[seqnum2] * (seqs[seqnum2]->portsets[pset].usage * seqs[seqnum2]->CZ2 + 1 - seqs[seqnum2]->portsets[pset].usage);
             CS2 += seqWeights[seqnum2] * (seqs[seqnum2]->portsets[pset].CS2);
             }
          Cin2 += ro * CS2;
+         if (Cin2 < 0) Cin2 = 0;
 
          double mult = (1.0 - (1 - Cin2) / (2 * block->seqcount)) * (Cin2 + CS2) / 2.0;
+//         printf("  Seq %d pset %d ro %.3f Cin2 %.3f CS2 %.3f mult %.3f\n",seqnum,pset,ro,Cin2,CS2,mult);
 
          double ql = 0;
          if (prevblock)
@@ -82,7 +84,7 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
             }
          double W = agg->portsets[pset].ES * mult * ql;
          R[pset] = agg->portsets[pset].ES + W;
-         T += agg->portsets[pset].prob * R[pset];
+         T += agg->portsets[pset].usage * R[pset];
          }
       if (T * agg->size > block->TD)
          block->TD = T * agg->size;
@@ -102,13 +104,14 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
             {
             if (!((1 << j) & pmask))
                continue;
-            portStreams[j] += agg->portsets[pset].prob / pcnt;
-            qlen[j] += agg->portsets[pset].prob / pcnt * R[pset] / T;
+            portStreams[j] += agg->portsets[pset].usage / pcnt;
+            qlen[j] += agg->portsets[pset].usage / pcnt * R[pset] / T;
             }
          }
 
       for (j = 0; j < PORTS_COUNT; j++)
          {
+//         printf("  Seq %d port %d qlen %.3f\n",seqnum,j,qlen[j]);
          block->qlength[j] += qlen[j];
          }
 
@@ -125,6 +128,27 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
             block->portsets[pset].seqStream[seqnum] += portStreams[j];
             }
          }
+      }
+
+   for (j = 0; j < PORTS_COUNT; j++)
+      {
+//      printf("port %d qlen %.3f\n",j,block->qlength[j]);
+      }
+
+   for (seqnum = 0; seqnum < SEQ_NUM_COUNT; seqnum++)
+      {
+      if (!(seqmask & (1 << seqnum)))
+         continue;
+      FSeqAggregate *agg = seqs[seqnum];
+      double T = 0;
+      for (pset = 0; pset < PORT_SETS_COUNT; pset++)
+         {
+         double W = agg->portsets[pset].ES * 1 * block->qlength[j];
+         double R = agg->portsets[pset].ES + W;
+         T += agg->portsets[pset].usage * R;
+         }
+      if (T * agg->size > block->TD)
+         block->TD = T * agg->size;
       }
 
    return block;
@@ -190,8 +214,8 @@ int main(int argc,char *argv[])
    FSeqAggregate *seqs[SEQ_NUM_COUNT];
    FSeqBlock *initial_blocks[SEQ_NUM_COUNT];
 
-//   char *basedir = "../../../samples/";
-   char *basedir = "samples/";
+   char *basedir = "../../../samples/";
+//   char *basedir = "samples/";
    int blockscount = 0;
    char fnamebuf[512];
    for (i = 0; i < scnt; i++)
@@ -203,8 +227,10 @@ int main(int argc,char *argv[])
          
       seqs[i] = make_seq_aggregate(is);
       free(is);
+//      strncpy(seqs[i]->seqname,argv[i+1],16);
       strncpy(seqs[i]->seqname,fnames[i],16);
       seqs[i]->seqname[15] = 0;
+      printf ("Sequence %s: size %.f, servT %f, latT %f \n",seqs[i]->seqname,seqs[i]->size,seqs[i]->T,seqs[i]->EZ);
       }
    qsort(seqs,scnt,sizeof(FSeqAggregate *),compare_seqs);
 
@@ -213,6 +239,11 @@ int main(int argc,char *argv[])
       uint32_t seqmask = 1 << i;
       FSeqBlock *work = make_block(1 << i,seqs);
       known_blocks[seqmask] = work;
+
+      printf("Found block %d: len %f\n",seqmask,work->TD);
+      for (j = 0; j < PORT_SETS_COUNT - 1; j++)
+         printf("   Portset %6s: prob %.2f stream %.3f\n",get_psname_by_num(j),seqs[i]->portsets[j].usage,work->portsets[j].seqStream[i]);
+
       blockscount++;
       prev_layer[prev_layer_size++] = seqmask;
       }
@@ -230,6 +261,7 @@ int main(int argc,char *argv[])
             uint32_t seqmask = work->seqmask | (1 << j);
             FSeqBlock *nwork = make_block(seqmask,seqs);
             known_blocks[seqmask] = nwork;
+            printf("Found block %d: len %f\n",seqmask,nwork->TD);
             blockscount++;
             cur_layer[cur_layer_size++] = seqmask;
             }

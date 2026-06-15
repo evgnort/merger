@@ -48,7 +48,7 @@ void free_timeline(FTimeline *tl);
 // Исходные данные набора приборов в одной последовательности
 typedef struct FDeviceSetDataTg {
    int use_count;
-   double prob;
+   double usage;
    double ES;
    double CS2;
    } FDeviceSetData;
@@ -63,7 +63,7 @@ typedef struct FPortSetTg {
 typedef struct FSeqAggregateTg {
    char seqname[16];
    FDeviceSetData portsets[PORT_SETS_COUNT];
-   int size;
+   double size;
    double T;
    double EZ;
    double CZ2;
