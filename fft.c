@@ -39,7 +39,7 @@ static void _shuffle_doubles(const double *source, double complex *target, int s
    {
    int shift = 16 - __builtin_ctz(size);
 
-   int pos,targ;
+   int pos;
    for (pos = 0; pos < ssize; pos++) 
       {
       int targ = (brlut[pos & 0xFF] << 8) + brlut[(pos >> 8) & 0xFF];
@@ -56,7 +56,7 @@ static void _shuffle_in_place(double complex *target, int size)
    {
    int shift = 16 - __builtin_ctz(size);
 
-   int pos,targ;
+   int pos;
    for (pos = 1; pos < size - 1; pos++) 
       {
       int targ = (brlut[pos & 0xFF] << 8) + brlut[(pos >> 8) & 0xFF];
@@ -152,8 +152,6 @@ void fft1d(const double *row1,int ssize, double complex *result, int rsize)
 
 void fft1d_ccm_ifft1d(double *row1,double *row2, double *result, int W1, int W2)
    {
-   int i,j;
-
    int tpsizeW = get_result_size(W1,W2);
 
    double complex *row1c = (double complex *)calloc(tpsizeW,sizeof(double complex));

@@ -80,7 +80,7 @@ float merge_regs_direct_full(const FTickSet *ts1, const FTickSet *ts2, int shift
 
 float merge_regs_direct_light(FTickSet *ts1, FTickSet *ts2, int shift, int reg_type)
    {
-   int i,j,k;
+   int i,j;
    int start = (shift > 0) ? shift : 0;
    int end = (ts1->ticks_count < ts2->ticks_count + shift) ? ts1->ticks_count : (ts2->ticks_count + shift);
 
@@ -162,8 +162,6 @@ double *timelines_port_merge(FTimeline *tl1, FTimeline *tl2)
       for (j = 0; j < rsize; j++)
          pensum[j] += penalties[j];
       }
-   double best_res = rsize;
-   int best_pos = 0;
 //   for (j = 0; j < rsize; j++)
 //      printf("%d: %f\n",j,pensum[j]);
 
@@ -174,6 +172,7 @@ double *timelines_port_merge(FTimeline *tl1, FTimeline *tl2)
 double *timelines_regs_merge(FTimeline *tl1, FTimeline *tl2, int reg_type)
    {
    int rsize = get_result_size(tl1->size,tl2->size);
+	return NULL;
    }
 
 #define INSTS_CNT_MAX 256
@@ -186,20 +185,23 @@ int main(int argc, char *argv[])
 
    if (argc != 3)
       return puts("format: ./merger file1.s file2.s"),0;
+	
+	char *fname1 = argv[1];
+	char *fname2 = argv[2];
    
    int i;
   
    parser_init();
    init_fft();
 
-   is1 = parser_read_file(argv[1]);
+   is1 = parser_read_file(fname1);
    if (!is1)
       goto main_exit;
    ts1 = make_tick_seq(is1);
    if (!ts1)
       goto main_exit;
 
-   is2 = parser_read_file(argv[2]);
+   is2 = parser_read_file(fname2);
    if (!is2)
       goto main_exit;
    ts2 = make_tick_seq(is2);
@@ -214,13 +216,12 @@ int main(int argc, char *argv[])
    if (!tl2)
       goto main_exit;
 
-   double *fft_port = timelines_port_merge(tl1,tl2); 
-   double *fft_sregs = timelines_regs_merge(tl1,tl2,SCALAR_REGS);
-   double *fft_vregs = timelines_regs_merge(tl1,tl2,VECTOR_REGS);
+   timelines_port_merge(tl1,tl2); 
+   timelines_regs_merge(tl1,tl2,SCALAR_REGS);
+   timelines_regs_merge(tl1,tl2,VECTOR_REGS);
 
    int shift;
    int bestshift = ts1->ticks_count;
-   float penal = 1.0;
    int seqlen = ts1->ticks_count + ts2->ticks_count;
    float bestres = seqlen;
    float bestregs = 0, bestports = 0;

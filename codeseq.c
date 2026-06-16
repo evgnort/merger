@@ -27,7 +27,7 @@ void update_port_usage_pmf(FTickPortUsage *target,double prob)
    {
    int i;
    
-   for (i = MAX_PORT_PRESSURE - 1; i >= 0; i--)
+   for (i = MAX_PORT_PRESSURE - 2; i >= 0; i--)
       {
       target->probs[i + 1] += target->probs[i] * prob;
       target->probs[i] *= (1 - prob);
@@ -258,7 +258,7 @@ FSeqAggregate *make_seq_aggregate(FInstructionSet *is)
       for (i = REG_YMM0; i < REG_MAX; i++)
          {
          for (j = is->instructions[k].tick + 1; j < is->instructions[k].reg_next_usage[i]; j++)
-            vreg_usage[j][i] = is->instructions[k].reg_next_usage[i];
+            vreg_usage[j][i - REG_YMM0] = is->instructions[k].reg_next_usage[i];
          }
       }
 

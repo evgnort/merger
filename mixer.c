@@ -9,7 +9,7 @@ FSeqBlock *known_blocks[1 << SEQ_NUM_COUNT];
 FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
    {
    FSeqBlock *block = (FSeqBlock *)calloc(1,sizeof(FSeqBlock));
-   int pset,pset2,seqnum,seqnum2,i,j;
+   int pset,seqnum,seqnum2,i,j;
 
    block->seqmask = seqmask;
    block->seqcount = __builtin_popcount(seqmask);
@@ -90,7 +90,7 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
             {
             if (!(seqmask & (1 << seqnum2)))
                continue;
-            double lcin = (1 - ro) * seqWeights[seqnum2] * (seqs[seqnum2]->portsets[pset].usage * seqs[seqnum2]->CZ2 + 1 - seqs[seqnum2]->portsets[pset].usage);
+//            double lcin = (1 - ro) * seqWeights[seqnum2] * (seqs[seqnum2]->portsets[pset].usage * seqs[seqnum2]->CZ2 + 1 - seqs[seqnum2]->portsets[pset].usage);
             CS2 += seqWeights[seqnum2] * (seqs[seqnum2]->portsets[pset].CS2);
             }
          Cin2 += ro * CS2;
@@ -146,7 +146,6 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
       for (pset = 0; pset < PORT_SETS_COUNT; pset++)
          {
          int pmask = get_portset_by_num(pset);
-         int pcnt = __builtin_popcount(pmask);
          block->portsets[pset].seqStream[seqnum] = 0;
 
          for (j = 0; j < PORTS_COUNT; j++)
@@ -158,11 +157,6 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
          }
       }
 
-   for (j = 0; j < PORTS_COUNT; j++)
-      {
-//      printf("port %d qlen %.3f\n",j,block->qlength[j]);
-      }
-
    for (seqnum = 0; seqnum < SEQ_NUM_COUNT; seqnum++)
       {
       if (!(seqmask & (1 << seqnum)))
@@ -171,7 +165,7 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
       double T = 0;
       for (pset = 0; pset < PORT_SETS_COUNT; pset++)
          {
-         double W = agg->portsets[pset].ES * 1 * block->qlength[j];
+         double W = agg->portsets[pset].ES * block->qlength[j];
          double R = agg->portsets[pset].ES + W;
          T += agg->portsets[pset].usage * R;
          }
@@ -241,7 +235,6 @@ int main(int argc,char *argv[])
       }
 
    FSeqAggregate *seqs[SEQ_NUM_COUNT];
-   FSeqBlock *initial_blocks[SEQ_NUM_COUNT];
 
    char *basedir = "../../../samples/";
 //   char *basedir = "samples/";
@@ -256,8 +249,7 @@ int main(int argc,char *argv[])
          
       seqs[i] = make_seq_aggregate(is);
       free(is);
-//      strncpy(seqs[i]->seqname,argv[i+1],16);
-      strncpy(seqs[i]->seqname,fnames[i],16);
+      strncpy(seqs[i]->seqname,fnames[i],15);
       seqs[i]->seqname[15] = 0;
       printf ("Sequence %s: size %.f, servT %f, latT %f \n",seqs[i]->seqname,seqs[i]->size,seqs[i]->T,seqs[i]->EZ);
       }

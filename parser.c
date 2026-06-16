@@ -793,7 +793,7 @@ static int _inst_search(FInstruction *inst, FInstructionDef *def, int ops_cnt)
       def->operands[ops_cnt - 1] = OP_NON;
       }
 
-   while (res = _compare_inst_def(&inst_idx[pos]->def,def))
+   while ((res = _compare_inst_def(&inst_idx[pos]->def,def)))
       {
       if (res < 0)
          low = pos;
@@ -987,7 +987,7 @@ bracket:
             param += strspn(param,"\t ");
             if (param[0] == '%')
                {
-               uint8_t rv = _get_reg(param+1,&reg);
+               _get_reg(param+1,&reg);
                *reg_usage |= ((uint64_t)(reg != REG_NONE)) << reg;
                }
             ccnt++;
@@ -1033,10 +1033,7 @@ FInstructionSet *parser_read_file(const char *filename)
       FInstructionDef idef = {0};
       uint64_t reg_usages[4] = {0};
       int pts_cnt = 0;
-      int regs[REG_MAX] = {0};
-      int treg = 0;
 
-      int pcnt = 0;
       char *pos = &buf[0];
       while (pos[0] == ' ' || pos[0] == '\t')  pos++;
 		if (pos[0] == '.' || pos[0] == '#')
@@ -1130,7 +1127,6 @@ FInstructionSet *parser_read_file(const char *filename)
       if (work->treg != REG_NONE)
          regs_last_usages[work->treg] = work;
 
-process_command:
       if (work->mops_cnt)
          {
          rv->inst_cnt++;
