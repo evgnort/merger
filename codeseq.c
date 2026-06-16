@@ -226,7 +226,9 @@ int compare_mops(const void *a,const void *b)
 FSeqAggregate *make_seq_aggregate(FInstructionSet *is)
    {
    FMOpsDesc mopsdesc[2048];
-   int cnt = 0;
+   int sreg_usage[2048][REGS_COUNT] = {0};
+   int vreg_usage[2048][REGS_COUNT] = {0};
+   int cnt = 0, lat_cnt = 0;
 
    int i,j,k;
    double lat_sum = 0;
@@ -237,6 +239,29 @@ FSeqAggregate *make_seq_aggregate(FInstructionSet *is)
    double TSum = 0;
    double pES2[PORT_SETS_COUNT] = {0};
 
+   for (i = REG_RAX; i < REG_YMM0; i++)
+      for (j = 0; j < is->reg_initial_usage[i]; j++)
+         sreg_usage[j][i] = is->reg_initial_usage[i];
+
+   for (i = REG_YMM0; i < REG_MAX; i++)
+      for (j = 0; j < is->reg_initial_usage[i]; j++)
+         vreg_usage[j][i - REG_YMM0] = is->reg_initial_usage[i];
+
+   for (k = 0; k < is->inst_cnt; k++)
+      {
+      for (i = REG_RAX; i < REG_YMM0; i++)
+         {
+         for (j = is->instructions[k].tick + 1; j < is->instructions[k].reg_next_usage[i]; j++)
+            sreg_usage[j][i] = is->instructions[k].reg_next_usage[i];
+         }
+
+      for (i = REG_YMM0; i < REG_MAX; i++)
+         {
+         for (j = is->instructions[k].tick + 1; j < is->instructions[k].reg_next_usage[i]; j++)
+            vreg_usage[j][i] = is->instructions[k].reg_next_usage[i];
+         }
+      }
+
    int itick = 0;
    for (k = 0; k < is->inst_cnt; k++)
       {
@@ -246,12 +271,38 @@ FSeqAggregate *make_seq_aggregate(FInstructionSet *is)
          mopsdesc[cnt].tick = itick;
          mopsdesc[cnt].portmask = is->instructions[k].ops[i].portmask;
          mopsdesc[cnt].duration = is->instructions[k].ops[i].duration;
-         if (!is->instructions[k].ops[i].portmask)
-            is->instructions[k].ops[i].portmask = 0;
          if (!is->instructions[k].ops[i].flags & MOP_UNCHAINED)
+            {
+            double ml = is->instructions[k].ops[i].latency;
+            lat_sum += ml;
+            lat_sum2 += ml * ml;
+            lat_cnt++;
             itick += is->instructions[k].ops[i].latency;
+            }
          cnt++;
          }
+      }
+   rv->EZ = lat_sum / lat_cnt;
+   double EZ2 =  rv->EZ * rv->EZ;
+   rv->CZ2 = (lat_sum2 / lat_cnt - EZ2) / EZ2;
+
+   for (i = 0 ; i < itick; i++)
+      {
+      int ucnt = 0;
+      for (j = 0; j < REGS_COUNT; j++)
+         ucnt += (sreg_usage[i][j] && sreg_usage[i][j] > i);
+      rv->sregs_pmf[ucnt] += 1.0;
+
+      ucnt = 0;
+      for (j = 0; j < REGS_COUNT; j++)
+         ucnt += (vreg_usage[i][j] && vreg_usage[i][j] > i);
+      rv->vregs_pmf[ucnt] += 1.0;
+      }
+
+   for (j = 0; j < REGS_COUNT; j++)
+      {
+      rv->sregs_pmf[j] /= itick;
+      rv->vregs_pmf[j] /= itick;
       }
 
    qsort(mopsdesc,cnt,sizeof(FMOpsDesc),compare_mops);
@@ -264,24 +315,22 @@ FSeqAggregate *make_seq_aggregate(FInstructionSet *is)
       rv->portsets[psnum].ES += dur;
       pES2[psnum] += dur * dur;
       rv->portsets[psnum].use_count++;
-      double ml = (double)((i == cnt - 1) ? itick : mopsdesc[i+1].tick) - mopsdesc[i-1].tick;
-      lat_sum += ml;
-      lat_sum2 += ml * ml;
       }
+
+   rv->T = rv->EZ + TSum / cnt;
+   rv->size = itick;
+
+   rv->size = (double)itick / rv->T;
 
    for (i = 0; i < PORT_SETS_COUNT ; i++)
       {
       if (!rv->portsets[i].use_count)
          continue;
       rv->portsets[i].ES /= rv->portsets[i].use_count;
-      rv->portsets[i].prob = (double)rv->portsets[i].use_count / cnt * 4;
+      rv->portsets[i].usage = (double)rv->portsets[i].use_count / rv->size;
       double ES2 =  rv->portsets[i].ES * rv->portsets[i].ES;
       rv->portsets[i].CS2 = (pES2[i] / rv->portsets[i].use_count - ES2) / ES2;
       }
-   rv->EZ = lat_sum / cnt;
-   double EZ2 =  rv->EZ * rv->EZ;
-   rv->CZ2 = (lat_sum2 / cnt - EZ2) / EZ2;
-   rv->T = rv->EZ + TSum / cnt;
-   rv->size = itick;
+
    return rv;
    }

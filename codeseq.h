@@ -67,6 +67,8 @@ typedef struct FSeqAggregateTg {
    double T;
    double EZ;
    double CZ2;
+   double sregs_pmf[REGS_COUNT];
+   double vregs_pmf[REGS_COUNT];
    } FSeqAggregate;
 
 void init_port_sets(void);
@@ -79,6 +81,8 @@ typedef struct FSeqBlockTg {
    uint32_t seqmask;
    int seqcount;
    FPortSet portsets[PORT_SETS_COUNT];
+   double sregs_pmf[REGS_COUNT * SEQ_NUM_COUNT];
+   double vregs_pmf[REGS_COUNT * SEQ_NUM_COUNT];
    double qlength[PORTS_COUNT];
    int saturated;
    double TD;

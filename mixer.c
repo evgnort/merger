@@ -16,6 +16,34 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
 
    block->TD = 0;
 
+   int mseq = 31 - __builtin_clz(seqmask);
+
+   double sreg_prob = 0;
+   double vreg_prob = 0;
+
+   if (block->seqcount == 1)
+      {
+      memcpy(block->sregs_pmf,seqs[mseq]->sregs_pmf,sizeof(double) * REGS_COUNT);
+      memcpy(block->vregs_pmf,seqs[mseq]->vregs_pmf,sizeof(double) * REGS_COUNT);
+      }
+   else
+      {
+      FSeqBlock *prevblock = known_blocks[seqmask - (1 << mseq)];
+      for (i = 0; i < REGS_COUNT; i++)
+      for (j = 0; j < REGS_COUNT; j++)
+         {
+         block->sregs_pmf[i + j] += seqs[mseq]->sregs_pmf[i] * prevblock->sregs_pmf[j];
+         block->vregs_pmf[i + j] += seqs[mseq]->vregs_pmf[i] * prevblock->vregs_pmf[j];
+         }
+      for (i = 0; i < REGS_COUNT; i++)
+         {
+         sreg_prob += block->sregs_pmf[i];
+         vreg_prob += block->vregs_pmf[i];
+         }
+      sreg_prob = 1.0 - sreg_prob;
+      vreg_prob = 1.0 - vreg_prob;
+      }
+
    for (seqnum = 0; seqnum < SEQ_NUM_COUNT; seqnum++)
       {
       if (!(seqmask & (1 << seqnum)))
@@ -150,6 +178,7 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
       if (T * agg->size > block->TD)
          block->TD = T * agg->size;
       }
+   block->TD += (sreg_prob + vreg_prob) * 4 * seqs[mseq]->size;
 
    return block;
    }
@@ -291,13 +320,18 @@ int main(int argc,char *argv[])
    while (1)
       {
       int cp = stack[stack_pos];
-      while (cp >= blockscount || clen + known_blocks[cp]->TD > best)
+      while (cp >= blockscount || clen + known_blocks[cp]->TD > best || (csmask & known_blocks[cp]->seqmask))
          { // Проверен последний блок в верхнем элементе стека или текущий результат уже хуже имеющегося
-         if (stack_pos == 0)
-            goto main_search_finish;
-         stack_pos--;
-         stack[stack_pos]++;
-         cp = stack[stack_pos];
+         if (cp >= blockscount)
+            {
+            if (stack_pos == 0)
+               goto main_search_finish;
+            stack_pos--;
+            cp = stack[stack_pos];
+            clen -= known_blocks[cp]->TD;
+            csmask -= known_blocks[cp]->seqmask;
+            }
+         stack[stack_pos] = ++cp;
          }
       clen += known_blocks[cp]->TD;
       csmask |= known_blocks[cp]->seqmask;
