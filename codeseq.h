@@ -19,7 +19,7 @@ typedef struct FTickRegUsageTg {
 
 #define REG_SETS_COUNT 2
 
-// Описание такта для поиска перебором
+// РћРїРёСЃР°РЅРёРµ С‚Р°РєС‚Р° РґР»СЏ РїРѕРёСЃРєР° РїРµСЂРµР±РѕСЂРѕРј
 typedef struct FTickTg {
    FTickPortUsage ports[PORTS_COUNT];
    FTickRegUsage regs[REG_SETS_COUNT];
@@ -33,7 +33,7 @@ typedef struct FTickSetTg {
 
 FTickSet *make_tick_seq(FInstructionSet *is);
 
-// Описание временных рядов для поиска через FFT
+// РћРїРёСЃР°РЅРёРµ РІСЂРµРјРµРЅРЅС‹С… СЂСЏРґРѕРІ РґР»СЏ РїРѕРёСЃРєР° С‡РµСЂРµР· FFT
 typedef struct FTimelineTg {
    int size;
    double *ports_usage[PORTS_COUNT][MAX_PORT_PRESSURE];
@@ -45,7 +45,7 @@ void free_timeline(FTimeline *tl);
 
 #define SEQ_NUM_COUNT 10
 
-// Исходные данные набора приборов в одной последовательности
+// РСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ РЅР°Р±РѕСЂР° РїСЂРёР±РѕСЂРѕРІ РІ РѕРґРЅРѕР№ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
 typedef struct FDeviceSetDataTg {
    int use_count;
    double usage;
@@ -53,7 +53,7 @@ typedef struct FDeviceSetDataTg {
    double CS2;
    } FDeviceSetData;
 
-// Характеристики набора приборов в блоке последовательностей
+// РҐР°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё РЅР°Р±РѕСЂР° РїСЂРёР±РѕСЂРѕРІ РІ Р±Р»РѕРєРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№
 typedef struct FPortSetTg {
    double seqStream[SEQ_NUM_COUNT];
    } FPortSet;

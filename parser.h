@@ -98,10 +98,10 @@ typedef struct FInstructionDescTg {
 #define OP_XMM 2
 #define OP_YMM 3
 
-// Простая память, Base, Base + Index, Base + Disp
+// РџСЂРѕСЃС‚Р°СЏ РїР°РјСЏС‚СЊ, Base, Base + Index, Base + Disp
 #define OP_MEM 4
 
-// Сложная память
+// РЎР»РѕР¶РЅР°СЏ РїР°РјСЏС‚СЊ
 #define OP_MEC 5
 
 #define OP_VAL 6
