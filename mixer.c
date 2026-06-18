@@ -90,7 +90,7 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
          double Cin2 = 0;
          double CS2 = 0;
          if (ro > 1)
-            ro = 1; // В парсинге последовательностей нужна обработка ветвящихся PDG
+            ro = 1; // Р’ РїР°СЂСЃРёРЅРіРµ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚РµР№ РЅСѓР¶РЅР° РѕР±СЂР°Р±РѕС‚РєР° РІРµС‚РІСЏС‰РёС…СЃСЏ PDG
          for (seqnum2 = 0; seqnum2 < SEQ_NUM_COUNT; seqnum2++)
             {
             if (!(seqmask & (1 << seqnum2)))
@@ -305,7 +305,7 @@ int main(int argc,char *argv[])
       {
       int cp = stack[stack_pos];
       while (cp >= blockscount || clen + known_blocks[cp]->TD > best || (csmask & known_blocks[cp]->seqmask))
-         { // Проверен последний блок в верхнем элементе стека или текущий результат уже хуже имеющегося
+         { // РџСЂРѕРІРµСЂРµРЅ РїРѕСЃР»РµРґРЅРёР№ Р±Р»РѕРє РІ РІРµСЂС…РЅРµРј СЌР»РµРјРµРЅС‚Рµ СЃС‚РµРєР° РёР»Рё С‚РµРєСѓС‰РёР№ СЂРµР·СѓР»СЊС‚Р°С‚ СѓР¶Рµ С…СѓР¶Рµ РёРјРµСЋС‰РµРіРѕСЃСЏ
          if (cp >= blockscount)
             {
             if (stack_pos == 0)
@@ -321,9 +321,9 @@ int main(int argc,char *argv[])
       csmask |= known_blocks[cp]->seqmask;
 
       if (csmask == full_mask)
-         { // Полное покрытие
+         { // РџРѕР»РЅРѕРµ РїРѕРєСЂС‹С‚РёРµ
          if (clen < best)
-            { // Лучший вариант
+            { // Р›СѓС‡С€РёР№ РІР°СЂРёР°РЅС‚
             best = clen;
             memcpy(beststack,stack,sizeof(stack));
             beststsize = stack_pos + 1;
