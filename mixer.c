@@ -16,7 +16,7 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
 
    block->TD = 0;
 
-   int mseq = 31 - __builtin_clz(seqmask);
+   int mseq = __builtin_ctz(seqmask);
 
    double sreg_prob = 0;
    double vreg_prob = 0;
@@ -73,12 +73,15 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
          double ro = seqWeights[seqnum] * agg->portsets[pset].ES;
          if (prevblock)
             {
+            double ro_mult = (agg->T * agg->size) / prevblock->TD;
+            ro *= ro_mult;
             for (seqnum2 = 0; seqnum2 < SEQ_NUM_COUNT; seqnum2++)
                if (prevblock->seqmask & (1 << seqnum2))
                   {
                   seqWeights[seqnum2] = prevblock->portsets[pset].seqStream[seqnum2];
                   swsum += seqWeights[seqnum2];
-                  ro += seqWeights[seqnum2] * seqs[seqnum2]->portsets[pset].ES;
+                  ro_mult = (seqs[seqnum2]->T * seqs[seqnum2]->size) / prevblock->TD;
+                  ro += ro_mult * seqWeights[seqnum2] * seqs[seqnum2]->portsets[pset].ES;
                   }
             }
          for (seqnum2 = 0; seqnum2 < SEQ_NUM_COUNT; seqnum2++)
@@ -86,18 +89,20 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
 
          double Cin2 = 0;
          double CS2 = 0;
+         if (ro > 1)
+            ro = 1; // В парсинге последовательностей нужна обработка ветвящихся PDG
          for (seqnum2 = 0; seqnum2 < SEQ_NUM_COUNT; seqnum2++)
             {
             if (!(seqmask & (1 << seqnum2)))
                continue;
-//            double lcin = (1 - ro) * seqWeights[seqnum2] * (seqs[seqnum2]->portsets[pset].usage * seqs[seqnum2]->CZ2 + 1 - seqs[seqnum2]->portsets[pset].usage);
+            Cin2 += (1 - ro) * seqWeights[seqnum2] * (seqs[seqnum2]->portsets[pset].usage * seqs[seqnum2]->CZ2 + 1 - seqs[seqnum2]->portsets[pset].usage);
             CS2 += seqWeights[seqnum2] * (seqs[seqnum2]->portsets[pset].CS2);
             }
          Cin2 += ro * CS2;
          if (Cin2 < 0) Cin2 = 0;
 
          double mult = (1.0 - (1 - Cin2) / (2 * block->seqcount)) * (Cin2 + CS2) / 2.0;
-//         printf("  Seq %d pset %d ro %.3f Cin2 %.3f CS2 %.3f mult %.3f\n",seqnum,pset,ro,Cin2,CS2,mult);
+//            printf("  Seq %d pset %X ro %.3f Cin2 %.3f CS2 %.3f mult %.3f\n",seqnum,pmask,ro,Cin2,CS2,mult);
 
          double ql = 0;
          if (prevblock)
@@ -139,7 +144,7 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
 
       for (j = 0; j < PORTS_COUNT; j++)
          {
-//         printf("  Seq %d port %d qlen %.3f\n",seqnum,j,qlen[j]);
+//            printf("  Seq %d port %d qlen %.3f stream %.3f\n",seqnum,j,qlen[j],portStreams[j]);
          block->qlength[j] += qlen[j];
          }
 
@@ -157,22 +162,8 @@ FSeqBlock * make_block(uint32_t seqmask,FSeqAggregate **seqs)
          }
       }
 
-   for (seqnum = 0; seqnum < SEQ_NUM_COUNT; seqnum++)
-      {
-      if (!(seqmask & (1 << seqnum)))
-         continue;
-      FSeqAggregate *agg = seqs[seqnum];
-      double T = 0;
-      for (pset = 0; pset < PORT_SETS_COUNT; pset++)
-         {
-         double W = agg->portsets[pset].ES * block->qlength[j];
-         double R = agg->portsets[pset].ES + W;
-         T += agg->portsets[pset].usage * R;
-         }
-      if (T * agg->size > block->TD)
-         block->TD = T * agg->size;
-      }
    block->TD += (sreg_prob + vreg_prob) * 4 * seqs[mseq]->size;
+//   printf("  Sregs: %.2f, Vregs: %.2f, sz %.2f\n",sreg_prob,vreg_prob,seqs[mseq]->size);
 
    return block;
    }
@@ -249,11 +240,14 @@ int main(int argc,char *argv[])
          
       seqs[i] = make_seq_aggregate(is);
       free(is);
+
       strncpy(seqs[i]->seqname,fnames[i],15);
       seqs[i]->seqname[15] = 0;
-      printf ("Sequence %s: size %.f, servT %f, latT %f \n",seqs[i]->seqname,seqs[i]->size,seqs[i]->T,seqs[i]->EZ);
       }
    qsort(seqs,scnt,sizeof(FSeqAggregate *),compare_seqs);
+
+   for (i = 0; i < scnt; i++)
+      printf ("Sequence %s: size %.f, cycle T %f, lat T %f \n",seqs[i]->seqname,seqs[i]->size,seqs[i]->T,seqs[i]->EZ);
 
    for (i = 0; i < scnt; i++)
       {
@@ -261,9 +255,7 @@ int main(int argc,char *argv[])
       FSeqBlock *work = make_block(1 << i,seqs);
       known_blocks[seqmask] = work;
 
-      printf("Found block %d: len %f\n",seqmask,work->TD);
-      for (j = 0; j < PORT_SETS_COUNT - 1; j++)
-         printf("   Portset %6s: prob %.2f stream %.3f\n",get_psname_by_num(j),seqs[i]->portsets[j].usage,work->portsets[j].seqStream[i]);
+      printf("Found block %X: len %f\n",seqmask,work->TD);
 
       blockscount++;
       prev_layer[prev_layer_size++] = seqmask;
@@ -282,7 +274,7 @@ int main(int argc,char *argv[])
             uint32_t seqmask = work->seqmask | (1 << j);
             FSeqBlock *nwork = make_block(seqmask,seqs);
             known_blocks[seqmask] = nwork;
-            printf("Found block %d: len %f\n",seqmask,nwork->TD);
+            printf("Found block %X: len %f\n",seqmask,nwork->TD);
             blockscount++;
             cur_layer[cur_layer_size++] = seqmask;
             }
@@ -313,7 +305,7 @@ int main(int argc,char *argv[])
       {
       int cp = stack[stack_pos];
       while (cp >= blockscount || clen + known_blocks[cp]->TD > best || (csmask & known_blocks[cp]->seqmask))
-         { // РџСЂРѕРІРµСЂРµРЅ РїРѕСЃР»РµРґРЅРёР№ Р±Р»РѕРє РІ РІРµСЂС…РЅРµРј СЌР»РµРјРµРЅС‚Рµ СЃС‚РµРєР° РёР»Рё С‚РµРєСѓС‰РёР№ СЂРµР·СѓР»СЊС‚Р°С‚ СѓР¶Рµ С…СѓР¶Рµ РёРјРµСЋС‰РµРіРѕСЃСЏ
+         { // Проверен последний блок в верхнем элементе стека или текущий результат уже хуже имеющегося
          if (cp >= blockscount)
             {
             if (stack_pos == 0)
@@ -329,9 +321,9 @@ int main(int argc,char *argv[])
       csmask |= known_blocks[cp]->seqmask;
 
       if (csmask == full_mask)
-         { // РџРѕР»РЅРѕРµ РїРѕРєСЂС‹С‚РёРµ
+         { // Полное покрытие
          if (clen < best)
-            { // Р›СѓС‡С€РёР№ РІР°СЂРёР°РЅС‚
+            { // Лучший вариант
             best = clen;
             memcpy(beststack,stack,sizeof(stack));
             beststsize = stack_pos + 1;
