@@ -6,6 +6,7 @@
 
 FInstructionDesc instruction_set[] = {
    {{"movabsq", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},0},
+   {{"movabsq", {OP_VAL, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},0},
    {{"movq", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},0},
    {{"movl", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},0},
    {{"movw", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_0156,1,1,0}},0},
@@ -294,22 +295,22 @@ FInstructionDesc instruction_set[] = {
 /* ==================== VPOR ==================== */
 /* 128-битные версии (XMM) */
    {{"vpor", {OP_XMM, OP_XMM, OP_NON, OP_XMM}}, 1, {{PORT_015,1,1,0}},0},
-   {{"vpor", {OP_XMM, OP_MEM, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,1,0}},0},
-   {{"vpor", {OP_XMM, OP_MEC, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,1,0}},0},
+   {{"vpor", {OP_MEM, OP_XMM, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,1,0}},0},
+   {{"vpor", {OP_MEC, OP_XMM, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,1,0}},0},
 /* 256-битные версии (YMM) */
    {{"vpor", {OP_YMM, OP_YMM, OP_NON, OP_YMM}}, 1, {{PORT_015,1,1,0}},0},
-   {{"vpor", {OP_YMM, OP_MEM, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,1,0}},0},
-   {{"vpor", {OP_YMM, OP_MEC, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,1,0}},0},
+   {{"vpor", {OP_MEM, OP_YMM, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,1,0}},0},
+   {{"vpor", {OP_MEC, OP_YMM, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,1,0}},0},
 
 /* ==================== VPXOR ==================== */
 /* 128-битные версии (XMM) */
    {{"vpxor", {OP_XMM, OP_XMM, OP_NON, OP_XMM}}, 1, {{PORT_015,1,1,0}},0},
-   {{"vpxor", {OP_XMM, OP_MEM, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,1,0}},0},
-   {{"vpxor", {OP_XMM, OP_MEC, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,1,0}},0},
+   {{"vpxor", {OP_MEM, OP_XMM, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,1,0}},0},
+   {{"vpxor", {OP_MEC, OP_XMM, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,1,0}},0},
 /* 256-битные версии (YMM) */
    {{"vpxor", {OP_YMM, OP_YMM, OP_NON, OP_YMM}}, 1, {{PORT_015,1,1,0}},0},
-   {{"vpxor", {OP_YMM, OP_MEM, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,1,0}},0},
-   {{"vpxor", {OP_YMM, OP_MEC, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,1,0}},0},
+   {{"vpxor", {OP_MEM, OP_YMM, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,1,0}},0},
+   {{"vpxor", {OP_MEC, OP_YMM, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,1,0}},0},
 
 /* ==================== VPADDD ==================== */
 /* 128-битные версии (XMM) */
@@ -360,23 +361,23 @@ FInstructionDesc instruction_set[] = {
 
 /* ==================== VPSRLD ==================== */
 /* 128-битные версии (XMM) */
-   {{"vpsrld", {OP_XMM, OP_VAL, OP_NON, OP_XMM}}, 1, {{PORT_01,1,1,0}},0},
-   {{"vpsrld", {OP_MEM, OP_VAL, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_01,1,1,0}},0},
-   {{"vpsrld", {OP_MEC, OP_VAL, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_01,1,1,0}},0},
+   {{"vpsrld", {OP_VAL, OP_XMM, OP_NON, OP_XMM}}, 1, {{PORT_01,1,1,0}},0},
+   {{"vpsrld", {OP_VAL, OP_MEM, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_01,1,1,0}},0},
+   {{"vpsrld", {OP_VAL, OP_MEC, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_01,1,1,0}},0},
 /* 256-битные версии (YMM) */
-   {{"vpsrld", {OP_YMM, OP_VAL, OP_NON, OP_YMM}}, 1, {{PORT_01,1,1,0}},0},
-   {{"vpsrld", {OP_MEM, OP_VAL, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_01,1,1,0}},0},
-   {{"vpsrld", {OP_MEC, OP_VAL, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_01,1,1,0}},0},
+   {{"vpsrld", {OP_VAL, OP_YMM, OP_NON, OP_YMM}}, 1, {{PORT_01,1,1,0}},0},
+   {{"vpsrld", {OP_VAL, OP_MEM, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_01,1,1,0}},0},
+   {{"vpsrld", {OP_VAL, OP_MEC, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_01,1,1,0}},0},
 
 /* ==================== VPMULLD ==================== */
 /* 128-битные версии (XMM) */
    {{"vpmulld", {OP_XMM, OP_XMM, OP_NON, OP_XMM}}, 2, {{PORT_01,5,1,0},{PORT_01,5,1,0}},0},
-   {{"vpmulld", {OP_XMM, OP_MEM, OP_NON, OP_XMM}}, 3, {{PORT_23,6,1,0},{PORT_01,5,1,0},{PORT_01,5,1,0}},0},
-   {{"vpmulld", {OP_XMM, OP_MEC, OP_NON, OP_XMM}}, 3, {{PORT_23,6,1,0},{PORT_01,5,1,0},{PORT_01,5,1,0}},0},
+   {{"vpmulld", {OP_MEM, OP_XMM, OP_NON, OP_XMM}}, 3, {{PORT_23,6,1,0},{PORT_01,5,1,0},{PORT_01,5,1,0}},0},
+   {{"vpmulld", {OP_MEC, OP_XMM, OP_NON, OP_XMM}}, 3, {{PORT_23,6,1,0},{PORT_01,5,1,0},{PORT_01,5,1,0}},0},
 /* 256-битные версии (YMM) */
    {{"vpmulld", {OP_YMM, OP_YMM, OP_NON, OP_YMM}}, 3, {{PORT_01,4,1,0},{PORT_01,3,1,0},{PORT_01,3,1,0}},0},
-   {{"vpmulld", {OP_YMM, OP_MEM, OP_NON, OP_YMM}}, 4, {{PORT_23,7,1,0},{PORT_01,4,1,0},{PORT_01,3,1,0},{PORT_01,3,1,0}},0},
-   {{"vpmulld", {OP_YMM, OP_MEC, OP_NON, OP_YMM}}, 4, {{PORT_23,7,1,0},{PORT_01,4,1,0},{PORT_01,3,1,0},{PORT_01,3,1,0}},0},
+   {{"vpmulld", {OP_MEM, OP_YMM, OP_NON, OP_YMM}}, 4, {{PORT_23,7,1,0},{PORT_01,4,1,0},{PORT_01,3,1,0},{PORT_01,3,1,0}},0},
+   {{"vpmulld", {OP_MEC, OP_YMM, OP_NON, OP_YMM}}, 4, {{PORT_23,7,1,0},{PORT_01,4,1,0},{PORT_01,3,1,0},{PORT_01,3,1,0}},0},
 
 /* ==================== VPMULUDQ (AVX2 Векторное умножение) ==================== */
 /* 128-битные версии (XMM) */
@@ -391,12 +392,12 @@ FInstructionDesc instruction_set[] = {
 /* ==================== VPCMPEQD ==================== */
 /* 128-битные версии (XMM) */
    {{"vpcmpeqd", {OP_XMM, OP_XMM, OP_NON, OP_XMM}}, 1, {{PORT_015,1,1,0}},0},
-   {{"vpcmpeqd", {OP_XMM, OP_MEM, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,1,0}},0},
-   {{"vpcmpeqd", {OP_XMM, OP_MEC, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,1,0}},0},
+   {{"vpcmpeqd", {OP_MEM, OP_XMM, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,1,0}},0},
+   {{"vpcmpeqd", {OP_MEC, OP_XMM, OP_NON, OP_XMM}}, 2, {{PORT_23,6,1,0},{PORT_015,1,1,0}},0},
 /* 256-битные версии (YMM) */
    {{"vpcmpeqd", {OP_YMM, OP_YMM, OP_NON, OP_YMM}}, 1, {{PORT_015,1,1,0}},0},
-   {{"vpcmpeqd", {OP_YMM, OP_MEM, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,1,0}},0},
-   {{"vpcmpeqd", {OP_YMM, OP_MEC, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,1,0}},0},
+   {{"vpcmpeqd", {OP_MEM, OP_YMM, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,1,0}},0},
+   {{"vpcmpeqd", {OP_MEC, OP_YMM, OP_NON, OP_YMM}}, 2, {{PORT_23,7,1,0},{PORT_015,1,1,0}},0},
 
 /* ==================== VMOVMSKPS ==================== */
 /* 128-битная версия (XMM) */
@@ -438,9 +439,9 @@ FInstructionDesc instruction_set[] = {
    {{"pext", {OP_REG, OP_MEC, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},0},
 
 /* ==================== POPCNT ==================== */
-   {{"popcnt", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_1,3,1,0}},0},
-   {{"popcnt", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},0},
-   {{"popcnt", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},0},
+   {{"popcntl", {OP_REG, OP_NON, OP_NON, OP_REG}}, 1, {{PORT_1,3,1,0}},0},
+   {{"popcntl", {OP_MEM, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},0},
+   {{"popcntl", {OP_MEC, OP_NON, OP_NON, OP_REG}}, 2, {{PORT_23,4,1,0},{PORT_1,3,1,0}},0},
 
 /* ==================== CLTQ ==================== */
    {{"cltq", {OP_NON, OP_NON, OP_NON, OP_NON}}, 1, {{PORT_0156,1,1,0}},0},
@@ -1046,6 +1047,9 @@ FInstructionSet *parser_read_file(const char *filename)
       while (pos[0] == ' ' || pos[0] == '\t') pos++;
 
       strcpy(idef.mnem,cmd);
+
+      if (lnum == 119)
+         lnum = 119;
 
       do
          {

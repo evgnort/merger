@@ -245,7 +245,7 @@ int main(int argc, char *argv[])
       float wt1 = REG_PENALTY * (rp1 + rp2);
       float wt2 = PORT_PENALTY * pp;
       float wt = wt1 + wt2 + (len - minlen);
-      printf("%4d: %.3f, %.3f, %.3f = %.3f + %d\n",shift,rp1,rp2,pp,REG_PENALTY * (rp1 + rp2) + PORT_PENALTY * pp,(len - minlen));
+//      printf("%4d: %.3f, %.3f, %.3f = %.3f + %d\n",shift,rp1,rp2,pp,REG_PENALTY * (rp1 + rp2) + PORT_PENALTY * pp,(len - minlen));
       if (wt < bestres)
          {
          bestshift = shift;

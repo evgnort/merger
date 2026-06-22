@@ -227,8 +227,8 @@ int main(int argc,char *argv[])
 
    FSeqAggregate *seqs[SEQ_NUM_COUNT];
 
-   char *basedir = "../../../samples/";
-//   char *basedir = "samples/";
+//   char *basedir = "../../../samples/";
+   char *basedir = "samples/";
    int blockscount = 0;
    char fnamebuf[512];
    for (i = 0; i < scnt; i++)
