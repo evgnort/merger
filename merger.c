@@ -169,11 +169,10 @@ double *timelines_port_merge(FTimeline *tl1, FTimeline *tl2)
    return pensum;
    }
 
-double *timelines_regs_merge(FTimeline *tl1, FTimeline *tl2, int reg_type)
-   {
-   int rsize = get_result_size(tl1->size,tl2->size);
-	return NULL;
-   }
+//double *timelines_regs_merge(FTimeline *tl1, FTimeline *tl2, int reg_type)
+//   {
+//   int rsize = get_result_size(tl1->size,tl2->size);
+//   }
 
 #define INSTS_CNT_MAX 256
 
@@ -183,31 +182,35 @@ int main(int argc, char *argv[])
    FTickSet *ts1 = NULL, *ts2 = NULL;
    FTimeline *tl1 = NULL,*tl2 = NULL;
 
-   if (argc != 3)
-      return puts("format: ./merger file1.s file2.s"),0;
+   char *fname1 = "sample2a.s";
+   char *fname2 = "sample2b.s";
 	
-	char *fname1 = argv[1];
-	char *fname2 = argv[2];
+   if (argc == 3)
+      fname1 = argv[1], fname2 = argv[2];
+
+	char *base_dir = "samples/";
    
    int i;
   
+   char fnamebuf[256];
    parser_init();
    init_fft();
 
-   is1 = parser_read_file(fname1);
+   sprintf(fnamebuf,"%s%s",base_dir,fname1);
+   is1 = parser_read_file(fnamebuf);
    if (!is1)
       goto main_exit;
    ts1 = make_tick_seq(is1);
    if (!ts1)
       goto main_exit;
 
-   is2 = parser_read_file(fname2);
+   sprintf(fnamebuf,"%s%s",base_dir,fname2);
+   is2 = parser_read_file(fnamebuf);
    if (!is2)
       goto main_exit;
    ts2 = make_tick_seq(is2);
    if (!ts2)
       goto main_exit;
-
 
    tl1 = make_timeline(ts1);
    if (!tl1)
@@ -216,9 +219,10 @@ int main(int argc, char *argv[])
    if (!tl2)
       goto main_exit;
 
-   timelines_port_merge(tl1,tl2); 
-   timelines_regs_merge(tl1,tl2,SCALAR_REGS);
-   timelines_regs_merge(tl1,tl2,VECTOR_REGS);
+   int rsize = get_result_size(tl1->size,tl2->size);
+   double *fft_port = timelines_port_merge(tl1,tl2); 
+//   double *fft_sregs = timelines_regs_merge(tl1,tl2,SCALAR_REGS);
+//   double *fft_vregs = timelines_regs_merge(tl1,tl2,VECTOR_REGS);
 
    int shift;
    int bestshift = ts1->ticks_count;
@@ -245,7 +249,7 @@ int main(int argc, char *argv[])
       float wt1 = REG_PENALTY * (rp1 + rp2);
       float wt2 = PORT_PENALTY * pp;
       float wt = wt1 + wt2 + (len - minlen);
-//      printf("%4d: %.3f, %.3f, %.3f = %.3f + %d\n",shift,rp1,rp2,pp,REG_PENALTY * (rp1 + rp2) + PORT_PENALTY * pp,(len - minlen));
+      printf("%4d: %.3f, %.3f, %.3f (%.3f) = %.3f + %d\n",shift,rp1,rp2,pp, fft_port[(shift + rsize) % rsize],REG_PENALTY * (rp1 + rp2) + PORT_PENALTY * pp,(len - minlen));
       if (wt < bestres)
          {
          bestshift = shift;
